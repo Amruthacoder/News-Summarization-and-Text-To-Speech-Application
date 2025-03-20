@@ -15,7 +15,9 @@ nltk.download("stopwords")
 
 # Initialize YAKE and Summarizer
 kw_extractor = yake.KeywordExtractor(lan="en", n=2, dedupLim=0.9, top=5)
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+
+def get_summarizer():
+    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")  # Lighter model
 
 # ✅ **Scrape Articles**
 def scrape_articles(company, urls):
@@ -79,8 +81,7 @@ def process_articles(company):
         url = lines[2].replace("URL: ", "").strip()
         article_content = "\n".join(lines[4:]).strip()
 
-        summary = summarizer(article_content[:500], max_length=100, min_length=30, do_sample=False)[0]["summary_text"]
-        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content)]
+        summary = get_summarizer()(article_content[:500], max_length=100, min_length=30, do_sample=False)        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content)]
         polarity = TextBlob(summary).sentiment.polarity
 
         sentiment = "Positive" if polarity > 0 else "Negative" if polarity < -0.1 else "Neutral"
