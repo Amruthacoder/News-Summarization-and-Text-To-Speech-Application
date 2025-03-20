@@ -7,4 +7,5 @@ yake
 transformers
 textblob
 gtts
-torch  
+torch 
+uvicorn 
