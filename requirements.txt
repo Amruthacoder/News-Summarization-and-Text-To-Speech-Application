@@ -1,0 +1,10 @@
+streamlit
+requests
+beautifulsoup4
+pandas
+nltk
+yake
+transformers
+textblob
+gtts
+torch  
