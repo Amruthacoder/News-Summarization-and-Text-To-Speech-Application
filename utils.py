@@ -81,7 +81,8 @@ def process_articles(company):
         url = lines[2].replace("URL: ", "").strip()
         article_content = "\n".join(lines[4:]).strip()
 
-        summary = get_summarizer()(article_content[:500], max_length=100, min_length=30, do_sample=False)        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content)]
+        summary = get_summarizer()(article_content[:500], max_length=100, min_length=30, do_sample=False)        
+        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content)]
         polarity = TextBlob(summary).sentiment.polarity
 
         sentiment = "Positive" if polarity > 0 else "Negative" if polarity < -0.1 else "Neutral"
