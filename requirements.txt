@@ -1,4 +1,5 @@
 uvicorn
+gunicorn
 streamlit
 requests
 beautifulsoup4

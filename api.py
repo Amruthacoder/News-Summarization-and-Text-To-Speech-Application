@@ -10,6 +10,10 @@ app = FastAPI()
 def home():
     return {"message": "Welcome to News Sentiment Analysis API!"}
 
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))  # Get Render's port
+    uvicorn.run(app, host="0.0.0.0", port=port)
+    
 # 📌 **Scrape and Process News**
 @app.get("/scrape_news/{company}")
 def scrape_news(company: str):
