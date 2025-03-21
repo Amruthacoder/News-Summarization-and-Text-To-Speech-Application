@@ -16,6 +16,9 @@ nltk.download("stopwords")
 # Initialize YAKE and Summarizer
 kw_extractor = yake.KeywordExtractor(lan="en", n=2, dedupLim=0.9, top=5)
 
+# ✅ Load once at the start of the script
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+
 def get_summarizer():
     return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")  # Lighter model
 
@@ -81,9 +84,12 @@ def process_articles(company):
         url = lines[2].replace("URL: ", "").strip()
         article_content = "\n".join(lines[4:]).strip()
 
-        summary = get_summarizer()(article_content[:500], max_length=100, min_length=30, do_sample=False)        
-        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content)]
-        polarity = TextBlob(summary).sentiment.polarity
+        summarizer = get_summarizer()  # Load once
+        summary = summarizer(article_content[:300], max_length=100, min_length=30, do_sample=False)        
+        keywords = [kw[0] for kw in kw_extractor.extract_keywords(article_content[:300])]  # Use only first 300 characters        polarity = TextBlob(summary).sentiment.polarity
+
+        textblob_analysis = TextBlob(summary).sentiment
+        polarity = textblob_analysis.polarity
 
         sentiment = "Positive" if polarity > 0 else "Negative" if polarity < -0.1 else "Neutral"
         sentiment_counts[sentiment] += 1
@@ -117,9 +123,9 @@ def generate_tts(company):
     tts_path = f"{dir_path}/{company}_sentiment_hindi.mp3"
 
     with open(json_path, "r", encoding="utf-8") as f:
-        sentiment_data = json.load(f)
+        sentiment_dist = json.load(f)["Sentiment Distribution"]
 
-    sentiment_text = f"{company} की खबरें {sentiment_data['Sentiment Distribution']} हैं।"
+    sentiment_text = f"{company} की खबरें {sentiment_dist} हैं।"    
     tts = gTTS(sentiment_text, lang="hi", slow=False)
     tts.save(tts_path)
 
