@@ -9,5 +9,4 @@ yake
 transformers
 textblob
 gtts
-torch 
 fastapi
